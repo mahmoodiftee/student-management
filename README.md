@@ -118,4 +118,3 @@ We maintain high quality through comprehensive testing.
 - **Postman Collection**: [postman_collection.json](./postman_collection.json)
 - **Coverage Report**: Available in the `/coverage` directory after running `npm run test:cov`.
 - **Environment Example**: [.env.example](./.env.example)
-
