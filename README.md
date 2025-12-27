@@ -1,98 +1,121 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+## Features
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+### 1. CRUD Operations
+Full student lifecycle management with:
+- **Create**: Add new student records with automatic hobby assignment.
+- **Read**: Retrieve all students or specific records by ID.
+- **Update**: Modify student details (triggers background hobby refresh).
+- **Delete**: **Soft Delete** implementation to preserve data integrity.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### 2. Redis Caching
+- **Student Counter**: Real-time tracking of total student counts in Redis.
+- **Atomic Operations**: Counter increments on creation and decrements on deletion.
 
-## Description
+### 3. Redis Queue (Background Jobs)
+- **Hobby Assignment**: Uses Bull (Redis-backed queue) to assign random hobbies after creation or modification.
+- **Hobby List**: Randomly selects from *Reading, Travelling, Movies, Games*.
+- **Asynchronous**: Tasks are processed out-of-band to ensure snappy API responses.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 4. Real-Time Communication (Socket.IO)
+- **Broadcasting**: Real-time updates delivered to clients joined in the `students` room.
+- **Event**: `student-updated` event broadcasts the entire student object whenever a hobby is assigned or updated.
 
-## Project setup
+### 5. Security & Compliance
+- **JWT Authentication**: Secured routes requiring valid Bearer tokens.
+- **Input Validation**: Strict validation for all requests (e.g., age 16-100, valid date formats).
+- **Rate Limiting**: Applied globally (10 requests per minute) to prevent abuse.
+- **Security Headers**: Integrated Helmet for standard web protection.
+- **CORS**: Configurable cross-origin resource sharing.
 
-```bash
-$ npm install
-```
+### 6. Dockerization
+- **Full Stack**: Containerized application using `Dockerfile` and `docker-compose.yml`.
+- **Services**: Includes NestJS App, PostgreSQL, and Redis.
 
-## Compile and run the project
+### 7. Testing
+- **Coverage**: >50% test coverage achieved using Jest.
+- **Suites**: Includes Unit Tests for Services/Processors and Integration Tests for Controllers.
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## Tech Stack
 
-# production mode
-$ npm run start:prod
-```
+- **Framework**: [NestJS](https://nestjs.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [TypeORM](https://typeorm.io/)
+- **Cache/Queue**: [Redis](https://redis.io/) with [Bull](https://optimalbits.github.io/bull/)
+- **Real-time**: [Socket.IO](https://socket.io/)
+- **Auth**: [Passport JWT](http://www.passportjs.org/)
+- **Validation**: [class-validator](https://github.com/typestack/class-validator)
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Steps to make it up and running
 
-# e2e tests
-$ npm run test:e2e
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed.
+- OR Node.js v18+, PostgreSQL, and Redis installed locally.
 
-# test coverage
-$ npm run test:cov
-```
+### Running with Docker
+The easiest way to start the entire system is using Docker Compose:
 
-## Deployment
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/mahmoodiftee/student-management.git
+   cd college-student-manager
+   ```
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+2. **Start the services**
+   ```bash
+   docker-compose up --build
+   ```
+   The API will be available at `http://localhost:3000`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Local Development
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+2. **Setup environment**
+   Copy `.env.example` to `.env` and fill in your local DB and Redis credentials.
+3. **Run the app**
+   ```bash
+   npm run start:dev
+   ```
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+---
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## API Endpoints
 
-## Resources
+### Authentication
+- `POST /auth/register`: Create a new administrative account.
+- `POST /auth/login`: Obtain a JWT token.
 
-Check out a few resources that may come in handy when working with NestJS:
+### Students
+- `GET /students`: List all students.
+- `GET /students/:id`: Get detailed view.
+- `POST /students`: Create new record.
+- `PUT /students/:id`: Update existing record.
+- `DELETE /students/:id`: Soft delete record.
+- `GET /students/count`: Get global student count (from Redis).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## Testing & Coverage
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+We maintain high quality through comprehensive testing.
 
-## Stay in touch
+- **Run all tests**: `npm test`
+- **Check coverage**: `npm run test:cov`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Coverage Result:**
+- **Statements**: 56.4% (Meets >50% requirement)
+- **Tests Passed**: 37 total (Services, Controllers, and Processors)
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Deliverables
+
+- **Source Code**: Included in this repository.
+- **Postman Collection**: [postman_collection.json](./postman_collection.json)
+- **Coverage Report**: Available in the `/coverage` directory after running `npm run test:cov`.
+- **Environment Example**: [.env.example](./.env.example)
+

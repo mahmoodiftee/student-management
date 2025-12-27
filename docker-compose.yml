@@ -1,36 +1,48 @@
 version: '3.8'
+
 services:
-  # The Application Service (For final deployment)
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+  postgres:
+    image: postgres:15-alpine
+    container_name: student_db
+    restart: always
     environment:
+      POSTGRES_DB: student_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: student_redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  app:
+    build: .
+    container_name: student_app
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
       - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=student_management
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=b94255334c1430f2a4fe85d1f31a18575ec2ee058835867e721d5f0a2a6bfe89eaea18ff6ff72426f7c3b2aecd3034395dea6f64818e288bc869a21b71129bf53c9143e2c13f49f8d3ce4ff6d9dd0b5639f6f81ef2bdf08fa464bdf2ab1aebf62c438c650cebb8ce7ba80f379309abfaa7abccf10653afc5879249454d964aa2d072e1d80fe4742ef038d19efe0b203221f6d028f3b8e32bacc76b33671ecefba16639893571fca968bb50bf4f84ea872209d5fc3c38a3f881330c080b3e2db3f66fb1b07c9e36e4116fdcad2129cf175c8e6fb987988e681d72e7d53bf454a2457755bfb2d08d5b1abd85f406072d83011fefc58edba7f9927e5649bfbdfbcd
     depends_on:
       - postgres
       - redis
 
-  # Database Service
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: securepassword
-      POSTGRES_DB: student_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  # Redis Service (For Queue & Cache)
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-
 volumes:
-  pgdata:
+  postgres_data:
+  redis_data:

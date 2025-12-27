@@ -1,0 +1,692 @@
+{
+    "info": {
+        "_postman_id": "college-student-manager-api",
+        "name": "College Student Management System",
+        "description": "Complete API collection for College Student Management System with Auth, Students, Queue, and WebSocket features",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3000",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "student_id",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health Check",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                ""
+                            ]
+                        },
+                        "description": "Simple health check endpoint to verify the server is running"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Health check endpoints"
+        },
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Register User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+                                    "    console.log(\"Token saved:\", jsonData.access_token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@college.com\",\n  \"password\": \"admin123\",\n  \"name\": \"Admin User\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user account. For the default admin, use admin@college.com / admin123."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 || pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
+                                    "    console.log(\"Token saved:\", jsonData.access_token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@college.com\",\n  \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Login to get an access token. Use admin@college.com / admin123 for the default user."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify Token",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"token\": \"{{access_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/verify",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify"
+                            ]
+                        },
+                        "description": "Verify the validity of a JWT token"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Authentication endpoints for user registration and login"
+        },
+        {
+            "name": "Students",
+            "item": [
+                {
+                    "name": "Create Student",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"student_id\", jsonData.id);",
+                                    "    console.log(\"Student ID saved:\", jsonData.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-2024-001\",\n  \"name\": \"John Doe\",\n  \"age\": 20,\n  \"gender\": \"Male\",\n  \"course\": \"Computer Science\",\n  \"admissionDate\": \"2024-01-15\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Create a new student record. Requires authentication."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Students",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Retrieve all students (excluding soft-deleted ones)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Student by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students/{{student_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students",
+                                "{{student_id}}"
+                            ]
+                        },
+                        "description": "Retrieve a specific student by their ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Student",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Updated Doe\",\n  \"age\": 21,\n  \"course\": \"Software Engineering\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students/{{student_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students",
+                                "{{student_id}}"
+                            ]
+                        },
+                        "description": "Update an existing student's information"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Student (Soft Delete)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students/{{student_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students",
+                                "{{student_id}}"
+                            ]
+                        },
+                        "description": "Soft delete a student (sets deletedAt timestamp)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Student Count",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students/count",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students",
+                                "count"
+                            ]
+                        },
+                        "description": "Get total count of students (cached in Redis for performance)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Assign Hobby (Queue)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students/{{student_id}}/assign-hobby",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students",
+                                "{{student_id}}",
+                                "assign-hobby"
+                            ]
+                        },
+                        "description": "Assign a hobby to a student using background queue processing. This will trigger a WebSocket notification when complete."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Student management endpoints - CRUD operations and hobby assignment"
+        },
+        {
+            "name": "Test Data",
+            "item": [
+                {
+                    "name": "Create Multiple Students",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// This is a helper to create multiple students for testing"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-2024-002\",\n  \"name\": \"Jane Smith\",\n  \"age\": 19,\n  \"gender\": \"Female\",\n  \"course\": \"Mathematics\",\n  \"admissionDate\": \"2024-02-10\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Create additional test students. Run this multiple times with different data."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Student - Alice Johnson",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-2024-003\",\n  \"name\": \"Alice Johnson\",\n  \"age\": 22,\n  \"gender\": \"Female\",\n  \"course\": \"Physics\",\n  \"admissionDate\": \"2024-03-05\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Student - Bob Williams",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-2024-004\",\n  \"name\": \"Bob Williams\",\n  \"age\": 21,\n  \"gender\": \"Male\",\n  \"course\": \"Chemistry\",\n  \"admissionDate\": \"2024-04-12\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Student - Carol Davis",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-2024-005\",\n  \"name\": \"Carol Davis\",\n  \"age\": 20,\n  \"gender\": \"Female\",\n  \"course\": \"Biology\",\n  \"admissionDate\": \"2024-05-20\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Pre-configured requests to create test data"
+        },
+        {
+            "name": "Rate Limiting Test",
+            "item": [
+                {
+                    "name": "Test Rate Limit (Run 15 times)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Run this request rapidly (15+ times) to test rate limiting. After 10 requests per minute, you should get a 429 Too Many Requests error."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Test rate limiting functionality (10 requests per minute)"
+        },
+        {
+            "name": "Security Tests",
+            "item": [
+                {
+                    "name": "Unauthorized Access Test",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Test accessing protected endpoint without authentication. Should return 401 Unauthorized."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Invalid Token Test",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "invalid_token_here",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Test with invalid JWT token. Should return 401 Unauthorized."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Weak Password Test",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"weak@example.com\",\n  \"password\": \"123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Test registration with weak password. Should return validation error."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Security testing - unauthorized access, invalid tokens, weak passwords"
+        },
+        {
+            "name": "Validation Tests",
+            "item": [
+                {
+                    "name": "Invalid Email Format",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-INV-001\",\n  \"name\": \"Test Student\",\n  \"email\": \"invalid-email\",\n  \"age\": 20,\n  \"gender\": \"Male\",\n  \"course\": \"Computer Science\",\n  \"admissionDate\": \"2024-01-15\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Test with invalid email format. Should return validation error."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Missing Required Fields",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test Student\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Test with missing required fields. Should return validation error."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Invalid Age (Too Young)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"studentId\": \"STU-YOUNG-001\",\n  \"name\": \"Test Student\",\n  \"age\": 10,\n  \"gender\": \"Male\",\n  \"course\": \"Computer Science\",\n  \"admissionDate\": \"2024-01-15\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/students",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "students"
+                            ]
+                        },
+                        "description": "Test with age below minimum (if validation exists). Should return validation error."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Input validation tests"
+        }
+    ]
+}
