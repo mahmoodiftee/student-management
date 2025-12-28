@@ -17,8 +17,26 @@ Full student lifecycle management with:
 - **Asynchronous**: Tasks are processed out-of-band to ensure snappy API responses.
 
 ### 4. Real-Time Communication (Socket.IO)
-- **Broadcasting**: Real-time updates delivered to clients joined in the `students` room.
-- **Event**: `student-updated` event broadcasts the entire student object whenever a hobby is assigned or updated.
+
+- **Broadcasting**: Real-time updates are delivered to all clients joined in the `students` room.
+- **Event**: The `student-updated` event broadcasts the entire student object whenever a hobby is assigned or updated.
+
+#### How is it working?
+
+The implementation follows a **Producer → Consumer → Broadcaster** pattern:
+
+1. **Trigger (Producer)**  
+   When a student is created or updated via the REST API (`StudentsService`), a job is added to a Redis queue called `hobby-queue`.
+
+2. **Process (Consumer)**  
+   A background worker (`HobbyProcessor`) listens to the queue, picks up the job, and executes the required business logic (for example, assigning a random hobby).
+
+3. **Broadcast (Broadcaster)**  
+   After processing is completed, the `HobbyProcessor` invokes the `SocketGateway`.
+
+4. **Emission (Socket.IO)**  
+   The `SocketGateway` emits a `student-updated` event to the `students` room.  
+   Any client connected to the WebSocket server and joined to this room receives the updated student data instantly.
 
 ### 5. Security & Compliance
 - **JWT Authentication**: Secured routes requiring valid Bearer tokens.
